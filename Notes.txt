@@ -1,0 +1,26 @@
+#################################################################################
+#################################################################################
+############################## Terraform with Nana ##############################
+#################################################################################
+#################################################################################
+
+Terraform is a infrastructure provisioning tool. It is allow you automate and manage your infrastructure, your playform, and services that run on that platform. Terraform use declarative way.
+
+Difference of IaC tools - How they work
+  1) Declarative vs Procedural(Imperative):
+    * Procedural(Imperative): You explain step by step how deploy thing
+    * Declarative: You explain final result and tools select steps by himself
+  2) Mutable vs Immutable:
+    * Mutable: Every new changes applied on already deployed infrastructure
+    * Immutable: Every new changes delete (replacing) old deploy and create a new one
+  3) Agent vs Agentless 
+
+Terraform Architecture
+
+Input components       Main components
+
+        main.tf       Providers
+                \    /
+                 CORE
+                /    \
+          State        

@@ -25,3 +25,6 @@ resource "docker_container" "nginx" { # Run image with configuration
     external = 8000                   # External port for container
   }
 }
+
+
+
