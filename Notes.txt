@@ -22,5 +22,17 @@ Input components       Main components
         main.tf       Providers
                 \    /
                  CORE
-                /    \
+                /    
           State        
+
+Terraform commands for different stages 
+>>refresh   # Query infrstructure provider to get current state 
+>>plan      # Create an execution plan 
+>>apply     # Execute the plan 
+>>destroy   # Destroy the resources/infrastructure 
+
+
+
+PROVIDERS IN TERRAFORM
+
+It is not required to provide "providers" information (it only works with providers that supported by HashiCorp not custom providers). But if you have a few providers then it is a good practice for create a new additional providers.tf file and put all providers here
