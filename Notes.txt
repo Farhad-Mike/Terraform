@@ -36,3 +36,7 @@ Terraform commands for different stages
 PROVIDERS IN TERRAFORM
 
 It is not required to provide "providers" information (it only works with providers that supported by HashiCorp not custom providers). But if you have a few providers then it is a good practice for create a new additional providers.tf file and put all providers here
+
+
+
+RESOURCES & DATA SOURCES
