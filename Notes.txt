@@ -39,4 +39,4 @@ It is not required to provide "providers" information (it only works with provid
 
 
 
-RESOURCES & DATA SOURCES
+CHANGE AND DESTROY RESOURCES
