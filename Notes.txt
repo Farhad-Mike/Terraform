@@ -26,12 +26,25 @@ Input components       Main components
           State        
 
 Terraform commands for different stages 
->>refresh   # Query infrstructure provider to get current state 
->>plan      # Create an execution plan 
->>apply     # Execute the plan 
->>destroy   # Destroy the resources/infrastructure 
+>>terraform refresh   # Query infrstructure provider to get current state 
+>>terraform plan      # Create an execution plan. The command can show you what attributes (options) exist of specific resources
+>>terraform apply     # Execute the plan 
+              Flag -auto-approve
+>>terraform destroy   # Destroy the resources/infrastructure 
+        Option --target <targetResource>        # Try do not use it. Because it delete in current state but not in configuration file. In future if you will use a file resource will comeback
 
-
+Terraform functions:
+  provider "<provider>" {}
+  resource "<specificKey>" "<name>" {
+    tags = {}   # Tag is the custom block that can contains any key = "value". Example stage = "development"
+  }
+  data "<specificKey>" "<name>" {}
+  output "<name>" {                   # The function is used for get value of attribute's key
+    value = "<key>"
+  }
+  variable "<name>" {                 # Input variable. INPUT, INPUT and again INPUT
+    <key> = "<value>"                 # What ask in prompt
+  }
 
 PROVIDERS IN TERRAFORM
 
@@ -39,4 +52,55 @@ It is not required to provide "providers" information (it only works with provid
 
 
 
-CHANGE AND DESTROY RESOURCES
+TERRAFORM STATE
+
+>>terraform state list                  # Show all states of infrastructure
+>>terraform state show <selectedState>  # Useful for get info of specific state
+
+
+
+OUTPUT VALUES
+
+After terraform apply completed the output block will show output valuest of attribute:
+  output "name" {
+    value = docker_container.nginx.<attribute>
+    value = docker_container.nginx.<attribute2>
+  }
+
+
+
+
+INPUT VARIABLES - PARAMETERIZE YOUR TERRAFORM CONFIGURATION TO MAKE IT RE-USABLE
+
+Declare variable:
+  variable "<varName>" {
+    description = <"description">
+    default = <"value">             # [Optional] Default value will applied if no value of variable will not fint
+    type = <string|number|bool|...> # [Optional] You can define what type of value should be applied. You can also use list(string), look about additional information in documentation. Also you can require list of objects with type requirements of objects.
+  }
+
+  resource "docker_image" "nginx" {
+    name         = var.<varName>    # If you use "var.<varName>[0] that is mean from list(string) get first value
+    keep_locally = false
+  }
+
+3 way to pass value to variable:
+ 1) If you don't provide value to variable it will prompt value of variable from you after you use "terraform apply" command
+ 2) >>terraform apply -var "<varName>=<value>"
+ 3) Define in splited file "terraform.tfvars". Example of file's body:
+      <varName> = <value>
+
+>>terraform apply -var-file /<dst>.tfvars     # Path to custom variable file that is not terraform.tfvars
+
+
+
+ENVIRONMENT VARIABLES IN TERRAFORM
+
+NOTE: You can use Linux ENVIRONMENT variables as terraform variables. Find documentation for every provider.
+
+For use custom ENVIRONMENT variables as terraform variables you should use profeix "TF_VAR_...". Example:
+  >>export TF_VAR_<key>_<name>="<value>"
+
+
+
+CREATE ROUTE TABLE AND INTERNET GATEWAY
