@@ -164,6 +164,11 @@ main.tf:
     }
   }
 
+  output "<name>" {                         # The function is used for get value of attribute's key
+    value = "<key>"
+  }
+
+
 providers.tf:
   terraform {
     required_providers {
@@ -206,6 +211,8 @@ providers.tf:
   }
 
 variable.tf:
+  variable "<name>" {}        # That is all what need for declare a variable
+
   variable "project_name" {
     description = "String"
     type        = string
@@ -218,6 +225,16 @@ variable.tf:
     default     = 4
   }
 
+
 terraform.tfvars:
   <key> = <value>
   <key> = <value>
+
+
+
+
+
+CREATE SSH KEY PAIR
+
+You can use ${some terraform expression} in string. Example: "Some string ${var.expression.name}"
+file(<path>)  # If you want put infromation from file.
