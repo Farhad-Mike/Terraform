@@ -125,7 +125,7 @@ providers.tf                  # [Optional] File for split information from "main
         Where it's defined         - In top-level Terraform config
         Required?                  - Yes, for actual usage
         Good for teams/versioning? - Not enough on its own
-variable.tf                   # [Optional] File for split information from "main.tf". Used for declare variables and set requirements about variables that will used in terraform project. 
+variables.tf                   # [Optional] File for split information from "main.tf". Used for declare variables and set requirements about variables that will used in terraform project. 
   1) string
   2) number
   3) bool
@@ -137,6 +137,7 @@ variable.tf                   # [Optional] File for split information from "main
      })
   7) any
 terraform.tfvars              # [Optional] File for split information from "main.tf"/"variable.tf". Contains <key> = <value> pairs line by line for set values to variables.
+outputs.tf                    # [Optional] Contains outputs functions
 terraform.tfstate             # [Automatically] Information about state of terraform project for current time.
 terraform.tfstate.backup      # [Automatically] Backup of previous state of terraform project.
 
@@ -210,7 +211,7 @@ providers.tf:
     allow_unverified_ssl = true
   }
 
-variable.tf:
+variables.tf:
   variable "<name>" {}        # That is all what need for declare a variable
 
   variable "project_name" {
@@ -238,3 +239,90 @@ CREATE SSH KEY PAIR
 
 You can use ${some terraform expression} in string. Example: "Some string ${var.expression.name}"
 file(<path>)  # If you want put infromation from file.
+<<EOF         # Put some shell file in terraform
+  ...
+EOF
+
+
+
+
+
+PROVISIONERS
+
+Provisioners themselves are not different for different providers, but how and when you use them can vary depending on the provider and resource type. Terraform provisioners like local-exec, remote-exec, and file are generic — they’re part of Terraform core, not specific to any provider (like AWS, Azure, VMware, etc.). Most providers support running provisioners after a resource is created, but some might delay IP assignment or other metadata, which affects when remote-exec can connect. In such cases, you may need to use provisioner "remote-exec" with depends_on or after checking readiness with null_resource + triggers.
+Most of cloud providers like Google, AWS, Azure support user_data attribute for execute shell script. But if some error will ocure terraform not inform you about it
+
+Example of use Provisioner:
+resource "<key>" "<attr>" {
+  connection {                              # How connect to remote server. Don't used without provisioner block. On this level tree connection block is used for all provisioners. By use connection block more deeper in tree will affect on provisioner in what it in. For example loot below
+    type = "ssh"
+    host = <ip|self.attr>
+    user = "<username">
+    password = "<password>"                 # Password or private_key
+    private_key = "<key>"|file(var.keyvar)  # Password or private_key
+  }
+
+  provisioner "remote-exec" {               # What to do on remote server. Don't used without connection block
+    inline = [                              # If you want put script in terraform's file
+      "export ENV=dev",
+      "mkdir somdir"
+      "touch file.txt"
+    ]
+
+    script = file("pathToBash.sh")          # Or you can use exist .sh script that already persist on remote server on which you will execute it.  I think it is more recommended way
+  }
+
+  provisioner "file" {                      # Used for copy file from local machine to remote server. Also use it for execute script on remote server
+    source = "/srcFile"
+    destination = "/dst/fileName"
+  }
+
+  provisioner "file" {
+    source = "/srcFile"
+    destination = "/dst/fileName"
+
+    connection {                            # The more deeper "connection" in the tree used for the provider it is in
+      type = "ssh"
+      host = <ip|self.attr>
+      user = "<username">
+      password = "<password>"
+      private_key = "<key>"|file(var.keyvar)
+    }
+  }
+
+  provisioner "local-exec" {                # Used for execute command in localhost
+    command = "<command>"
+  }
+}
+
+
+
+
+
+PROVISIONERS ARE NOT RECOMMENDED BY TERRAFORM
+
+For manage servers use another tools such as Ansible, CHEF, Puppet
+For manage local server use provider "local"
+
+
+
+
+
+CREATE AND USE LOCAL MODULE
+
+Tree structure of Terraform with modules:
+
+./<project>
+    main.tf
+    variables.tf
+    outputs.tf
+    providers.tf
+    terraform.tfvars
+    ./modules/<moduleName>
+        main.tf
+        outputs.tf
+        vaiables.tf
+    ./modules/<moduleName>
+        main.tf
+        outputs.tf
+        vaiables.tf
