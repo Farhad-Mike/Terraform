@@ -76,7 +76,7 @@ INPUT VARIABLES - PARAMETERIZE YOUR TERRAFORM CONFIGURATION TO MAKE IT RE-USABLE
 Declare variable:
   variable "<varName>" {
     description = <"description">
-    default = <"value">             # [Optional] Default value will applied if no value of variable will not fint
+    default = <"value">             # [Optional] Default value will applied if no value of variable will applied
     type = <string|number|bool|...> # [Optional] You can define what type of value should be applied. You can also use list(string), look about additional information in documentation. Also you can require list of objects with type requirements of objects.
   }
 
@@ -317,7 +317,7 @@ Tree structure of Terraform with modules:
     variables.tf
     outputs.tf
     providers.tf
-    terraform.tfvars
+    terraform.tfvars          # There you should set value to variables. You should set variables in the >>terraform.tfvars according selected <moduleName>
     ./modules/<moduleName>
         main.tf
         outputs.tf
@@ -326,3 +326,17 @@ Tree structure of Terraform with modules:
         main.tf
         outputs.tf
         vaiables.tf
+
+Example of module block in main.tf:
+  module "<anyName>" {
+    source = "/pathToModule"
+    <moduleVar> = var.<varName>    # Value of variable from terraform.tfvars apply to var.<varName> (what is in global variable.tf file). After that Value of variable var.<varName> apply to <moduleVar> (what are in module subfolder). You can directly assign to <moduleVar> any value
+    <moduleVar> = var.<varName>
+  }
+
+Example of call one of an output block from module:
+  resource "<key>" "<attr>" {
+    <key> = module.<moduleNameInMain.tf>.<outputName>.<attr> 
+  }
+
+Reuse terraform init command. If you add new module
