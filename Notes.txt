@@ -340,3 +340,9 @@ Example of call one of an output block from module:
   }
 
 Reuse terraform init command. If you add new module
+
+
+
+
+
+7. Remote State in Terraform - why it's important and how to configure it 
